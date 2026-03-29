@@ -193,41 +193,42 @@
     document.head.appendChild(s);
   }
 
-    function collapseCard(card, uid, username) {
-        card.dataset.bdwmCollapsed = 'true';
+  function collapseCard(card, uid, username) {
+    card.dataset.bdwmCollapsed = 'true';
 
-        const inner = document.createElement('div');
-        inner.className = 'bdwm-collapse-inner';
+    const inner = document.createElement('div');
+    inner.className = 'bdwm-collapse-inner';
+    while (card.firstChild) inner.appendChild(card.firstChild);
+    card.appendChild(inner);
 
-        while (card.firstChild) inner.appendChild(card.firstChild);
-        card.appendChild(inner);
+    card.classList.add('bdwm-collapsed');
+    card.style.position = 'relative';
 
-        // 动态计算 post-vote-container 距离 card 顶部的偏移
+    const btn = document.createElement('button');
+    btn.className = 'bdwm-expand-btn';
+    btn.textContent = `👤 ${username || 'UID:' + uid}（已屏蔽）— 点击展开`;
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      card.classList.remove('bdwm-collapsed');
+      card.dataset.bdwmCollapsed = 'false';
+      inner.style.transform = '';
+      btn.remove();
+    });
+    card.appendChild(btn);
+
+    // 等待布局完成后再计算偏移
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
         const voteContainer = inner.querySelector('.post-vote-container');
         if (voteContainer) {
-            const cardRect = card.getBoundingClientRect();
-            const voteRect = voteContainer.getBoundingClientRect();
-            const offset = voteRect.top - cardRect.top;
-            inner.style.transform = `translateY(-${offset}px)`;
+          const cardRect = card.getBoundingClientRect();
+          const voteRect = voteContainer.getBoundingClientRect();
+          const offset = voteRect.top - cardRect.top;
+          inner.style.transform = `translateY(-${offset}px)`;
         }
-
-        card.classList.add('bdwm-collapsed');
-
-        const btn = document.createElement('button');
-        btn.className = 'bdwm-expand-btn';
-        btn.textContent = `👤 ${username || 'UID:' + uid}（已屏蔽）— 点击展开`;
-
-        btn.addEventListener('click', e => {
-            e.stopPropagation();
-            card.classList.remove('bdwm-collapsed');
-            card.dataset.bdwmCollapsed = 'false';
-            inner.style.transform = '';
-            btn.remove();
-        });
-
-        card.style.position = 'relative';
-        card.appendChild(btn);
-    }
+      });
+    });
+  }
 
   function processCards() {
     const blockedUids = getBlockedList();
