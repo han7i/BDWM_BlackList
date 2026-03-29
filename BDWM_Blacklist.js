@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         未名BBS用户屏蔽
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @description  屏蔽指定用户的帖子，折叠为窄条并可展开
 // @author       lkcmj
 // @match        https://bbs.pku.edu.cn/*
